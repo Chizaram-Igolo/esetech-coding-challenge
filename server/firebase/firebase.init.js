@@ -1,4 +1,6 @@
-import { initializeApp } from "firebase/app";
+const { initializeApp } = require("firebase/app");
+const { getFirestore } = require("firebase/firestore");
+const { getAuth } = require("firebase/auth");
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -12,4 +14,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export default app;
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+module.exports = { app, auth, db };

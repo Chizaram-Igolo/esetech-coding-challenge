@@ -1,22 +1,38 @@
-import React from "react";
+import { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginSchema = Yup.object().shape({
-  emailOrUsername: Yup.string().required("Email or Username is required"),
+  email: Yup.string().required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
 
 const Login = () => {
   const initialValues = {
-    emailOrUsername: "",
+    email: "",
     password: "",
   };
 
-  const handleSubmit = (values) => {
-    // Handle login logic here
-    console.log(values);
+  let navigate = useNavigate();
+
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/auth/signin",
+        values
+      );
+
+      if (response.status === 200) {
+        const uid = response.data.uid;
+        navigate(`/dashboard/profile`, { state: response.data });
+      } else {
+        console.error("Error signing in:", response.data.error);
+      }
+    } catch (error) {
+      console.error("Error signing in:", error);
+    }
   };
 
   return (
@@ -35,18 +51,14 @@ const Login = () => {
         <h2 className="text-2xl font-semibold mb-4">Login</h2>
 
         <div className="mb-4">
-          <label htmlFor="emailOrUsername">Email or Username</label>
+          <label htmlFor="email">Email or Username</label>
           <Field
             type="text"
-            id="emailOrUsername"
-            name="emailOrUsername"
+            id="email"
+            name="email"
             className="w-full border p-2"
           />
-          <ErrorMessage
-            name="emailOrUsername"
-            component="div"
-            className="text-red-500"
-          />
+          <ErrorMessage name="email" component="div" className="text-red-500" />
         </div>
 
         <div className="mb-4">
